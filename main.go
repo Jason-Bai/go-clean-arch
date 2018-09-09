@@ -12,7 +12,6 @@ import (
 	"github.com/Jason-Bai/go-clean-arch/model"
 	v "github.com/Jason-Bai/go-clean-arch/pkg/version"
 	"github.com/Jason-Bai/go-clean-arch/router"
-	"github.com/Jason-Bai/go-clean-arch/router/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
@@ -21,13 +20,17 @@ import (
 )
 
 var (
-	cfg     = pflag.StringP("config", "c", "", "apiserver config file path.")
+	// custom config path, it's useful
+	cfg = pflag.StringP("config", "c", "", "apiserver config file path.")
+	// build a version command into main binary program
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
+// 0. Keep main function more clear
 func main() {
 	pflag.Parse()
 
+	// 1. Binary Program with version, to find bug quickly
 	if *version {
 		v := v.Get()
 		marshalled, err := json.MarshalIndent(&v, "", "  ")
@@ -40,28 +43,21 @@ func main() {
 		return
 	}
 
-	// load configs
+	// 2. Load configs
 	if err := config.Init(*cfg); err != nil {
 		panic(err)
 	}
 
+	// 3. Connect to DB
 	model.DB.Init()
 	defer model.DB.Close()
 
 	gin.SetMode(viper.GetString("runmode"))
 
-	g := gin.New()
+	// 4. Create a gin-gonic router
+	g := router.Init()
 
-	middlewares := []gin.HandlerFunc{
-		middleware.Logging(),
-		middleware.RequestId(),
-	}
-
-	router.Load(
-		g,
-		middlewares...,
-	)
-
+	// 5. test avaliable in last
 	go func() {
 		if err := pingServer(); err != nil {
 			log.Fatal("The router has no response, or it might took too long to start up.", err)
@@ -70,7 +66,7 @@ func main() {
 		log.Info("The router has been deployed successfully")
 	}()
 
-	// Start to listening the incoming requests
+	// 6. Start to listening the incoming requests with https
 	cert := viper.GetString("tls.cert")
 	key := viper.GetString("tls.key")
 
@@ -81,10 +77,12 @@ func main() {
 		}()
 	}
 
+	// 7. Start to listening the incoming request with http
 	log.Infof("Start to lisening the incoming requests on http address: %s", viper.GetString("addr"))
 	log.Info(http.ListenAndServe(viper.GetString("addr"), g).Error())
 }
 
+// last check avaliable
 func pingServer() error {
 	for i := 0; i < viper.GetInt("max_ping_count"); i++ {
 		resp, err := http.Get(viper.GetString("url") + "/sd/health")

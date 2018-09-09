@@ -15,6 +15,21 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
+func Init() *gin.Engine {
+	g := gin.New()
+	middlewares := []gin.HandlerFunc{
+		middleware.Logging(),
+		middleware.RequestId(),
+	}
+
+	Load(
+		g,
+		middlewares...,
+	)
+
+	return g
+}
+
 // Load loads the middlewares, routes, handlers.
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	// Middlewares.
