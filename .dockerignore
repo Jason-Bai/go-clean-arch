@@ -1,0 +1,5 @@
+.dockerignore
+Dockerfile
+vender
+log/*.*
+go-clean-arch

@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"go-api-server/demo06/pkg/errno"
 	"net/http"
+
+	"github.com/Jason-Bai/go-clean-arch/pkg/errno"
 
 	"github.com/gin-gonic/gin"
 )
