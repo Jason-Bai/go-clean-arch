@@ -45,7 +45,7 @@ case "$1" in
   stop
 	;;  
 	*)  
-	echo "usage: $0 {build|run}"
+	echo "usage: $0 {build|start|stop}"
 	exit 1
 	;;  
 esac

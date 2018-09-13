@@ -28,6 +28,12 @@ stop:
 	${BASEDIR}/scripts/admin.sh stop
 restart:
 	${BASEDIR}/scripts/admin.sh restart
+build:
+	${BASEDIR}/scripts/docker.sh build
+run:
+	${BASEDIR}/scripts/docker.sh start
+remove:
+	${BASEDIR}/scripts/docker.sh stop
 
 help:
 	@echo "make - compile the source code"
@@ -38,5 +44,8 @@ help:
 	@echo "make start - start a server"
 	@echo "make stop - stop a server"
 	@echo "make restart - stop and start a server"
+	@echo "make build - build docker image"
+	@echo "make run - run docker container"
+	@echo "make remove - remove a docker container"
 
 .PHONY: clean gotool ca help
