@@ -43,8 +43,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		c.String(http.StatusNotFound, "The incorrect API route.")
 	})
 
-	// swagger api docs
-	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	ginMode := gin.Mode()
+
+	// Only open in test mode
+	if ginMode == "test" || ginMode == "debug" {
+		g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	// pprof router
 	pprof.Register(g, nil)
